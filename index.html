@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kaktovik Inupiaq numerals</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style type="text/css">
+        @font-face {
+          font-family: ki;
+          src: url(font/InupiaqNumbers.ttf);
+        }
+
+        body, button {
+            font-family: ki;
+            margin-top: 30px;
+            background: #dedede;
+        }
+
+        button {
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+        }
+        #visor {
+            border: 1px solid #aaaaaa;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        input {
+            border: none;
+            background: rgb(222, 235, 249);
+        }
+
+        table {
+            font-size: 20px;
+        }
+
+        #breguenaits {
+            background-color: white;
+            border-radius: 12px;
+            width: 380px;
+            box-shadow: 0px 0px 20px gray;
+            padding: 20px 20px 20px 20px;
+        }
+    </style>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.min.js"
+      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+      crossorigin="anonymous"></script>
+    <script type="text/javascript">
+          $(document).ready(function(){
+            // var inicial = 1;
+
+            /* Coloca os numeros e simbolos no palco */
+            $("#calculadora .numeral").click(function() {
+                var simb = $(this).text(); // exibe simbolo selecionado
+                var num = $(this).attr('title'); // exibe numero do simbolo selecionado
+
+                console.log( num );
+
+                var x = $("#palco .termo").val();
+                var y = $("#decimal .termo").val();
+
+                $("#palco .termo").val(x+""+simb);
+                $("#decimal .termo").val(y+""+num);
+
+            });
+
+            /* Botao limpar */
+            $("#limpar").click(function(){
+                $(".termo, .resposta").val("");
+            });
+
+
+            /* Adiciona simbolo da operacao */
+            $(".operacao").click(function(){
+                var operacaoSelecionada = $(this).text();
+
+                var x = $("#palco .termo").val();
+                var y = $("#decimal .termo").val();
+
+                $("#palco .termo").val(x+""+  operacaoSelecionada);
+                $("#decimal .termo").val(y+""+ operacaoSelecionada);
+            });
+
+            /* Calcula */
+            /* TODO multiplas operacoes */
+            $("#calcular").click(function(){
+                var res = $("#decimal .termo").val();
+                var vector = res.split(' ');
+
+
+                /*vector.forEach(element => {*/
+                    ////////////////////////////////////////////////////////////
+
+                    var t1 = vector[0]; ////////////////////////////////////////
+                    var t2 = vector[2]; ////////////////////////////////////////
+                    var op = vector[1]; ////////////////////////////////////////
+
+                    var resposta = 0;
+                    switch (op) {
+                        case "+":
+                            resposta = parseInt(t1) + parseInt(t2);
+                        break;
+
+                        case "-":
+                            resposta = parseInt(t1) - parseInt(t2);
+                        break;
+
+                        case "*":
+                            resposta = parseInt(t1) * parseInt(t2);
+                        break;
+
+                        case "/":
+                            resposta = parseInt(t1) / parseInt(t2);
+                        break;
+                    }
+
+                    var sobra = 0;
+                    var respostaDecimal = resposta;
+
+                    if ( resposta > 19 ) {
+                        sobra = resposta % 20;
+                        resposta = parseInt(resposta / 20);
+                    }
+
+                    console.log(t1 + "" + op + "" + t2 + "=" + respostaDecimal + " divisão "+ resposta + " sobra: "+sobra);
+                    console.log( respostaDecimal );
+                    // return false;
+
+                    var vetorSimbolos = [
+                        { simbolo: ""   , valor:  0 }
+                        , { simbolo: "" , valor:  1 }
+                        , { simbolo: "" , valor:  2 }
+                        , { simbolo: "" , valor:  3 }
+                        , { simbolo: "" , valor:  4 }
+                        , { simbolo: "" , valor:  5 }
+                        , { simbolo: ""  , valor:  6 }
+                        , { simbolo: "" , valor:  7 }
+                        , { simbolo: "" , valor:  8 }
+                        , { simbolo: "" , valor:  9 }
+                        , { simbolo: "" , valor: 10 }
+                        , { simbolo: "" , valor: 11 }
+                        , { simbolo: "" , valor: 12 }
+                        , { simbolo: "" , valor: 13 }
+                        , { simbolo: "" , valor: 14 }
+                        , { simbolo: "" , valor: 15 }
+                        , { simbolo: "  " , valor: 16 }
+                        , { simbolo: "" , valor: 17 }
+                        , { simbolo: "" , valor: 18 }
+                        , { simbolo: "" , valor: 19 }
+                    ];
+
+                    var rs  = vetorSimbolos[resposta]['simbolo'];
+                    if ( respostaDecimal > 19 ) {
+                        rs += vetorSimbolos[sobra]['simbolo'];
+                    }
+                    var rv = vetorSimbolos[resposta]['valor'];
+
+                    $("#palco .resposta").val( rs );
+                    $("#decimal .resposta").val( respostaDecimal );
+                    ////////////////////////////////////////////////////////////
+
+                /*});*/
+
+            });
+
+
+/*
+            $(".operacao").click(function() {
+                var y = $(this).text();
+                $("#palco .operacao, #palco2 .operacao").text( y );
+            });
+*/
+
+
+/*
+            $("#calcular").click(function() {
+                var t1 = $("#numero1").text();
+                var t2 = $("#numero2").text();
+                var op = $("#palco .operacao").text();
+
+                var resposta = 0;
+                switch (op) {
+                    case "+":
+                        resposta = parseInt(t1) + parseInt(t2);
+                    break;
+
+                    case "-":
+                        resposta = parseInt(t1) - parseInt(t2);
+                    break;
+
+                    case "*":
+                        resposta = parseInt(t1) * parseInt(t2);
+                    break;
+
+                    case "/":
+                        resposta = parseInt(t1) / parseInt(t2);
+                    break;
+                }
+
+                var sobra = 0;
+                var respostaDecimal = resposta;
+
+                if ( resposta > 19 ) {
+                    sobra = resposta % 20;
+                    resposta = parseInt(resposta / 20);
+                }
+
+                console.log(t1 + "" + op + "" + t2 + "=" + respostaDecimal + " divisão "+ resposta + " sobra: "+sobra);
+                console.log( respostaDecimal );
+                // return false;
+
+                var vetorSimbolos = [
+                    { simbolo: ""   , valor:  0 }
+                    , { simbolo: "" , valor:  1 }
+                    , { simbolo: "" , valor:  2 }
+                    , { simbolo: "" , valor:  3 }
+                    , { simbolo: "" , valor:  4 }
+                    , { simbolo: "" , valor:  5 }
+                    , { simbolo: ""    , valor:  6 }
+                    , { simbolo: "" , valor:  7 }
+                    , { simbolo: "" , valor:  8 }
+                    , { simbolo: "" , valor:  9 }
+                    , { simbolo: "" , valor: 10 }
+                    , { simbolo: "" , valor: 11 }
+                    , { simbolo: "" , valor: 12 }
+                    , { simbolo: "" , valor: 13 }
+                    , { simbolo: "" , valor: 14 }
+                    , { simbolo: "" , valor: 15 }
+                    , { simbolo: "  "   , valor: 16 }
+                    , { simbolo: "" , valor: 17 }
+                    , { simbolo: "" , valor: 18 }
+                    , { simbolo: "" , valor: 19 }
+                ];
+
+                var rs  = vetorSimbolos[resposta]['simbolo'];
+                if ( respostaDecimal > 19 ) {
+                    rs += vetorSimbolos[sobra]['simbolo'];
+                }
+                var rv = vetorSimbolos[resposta]['valor'];
+
+                $("#palco .resposta").text(  rs );
+                $("#palco2 .resposta").text( respostaDecimal );
+            });
+*/
+
+        });
+    </script>
+</head>
+
+<body>
+
+    <center>
+        <h3>Calculadora Inupiaq Numbers</h3><br>
+        <div id="breguenaits" style="padding: 10px 10;">
+            <table>
+                <tr style="background: rgb(222, 235, 249);">
+                    <td colspan="2" id="visor">
+                        <fieldset>
+                            <legend>Inupiaq</legend>
+                            <div id="palco" class="text-center">
+                                <input type="text" class="termo" value="" style="width:60%">
+                                <span >=</span>
+                                <input type="text" class="resposta" value="" style="width:30%">
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Decimal</legend>
+                            <div id="decimal" class="text-center">
+                                <input type="text" class="termo" value="" style="width:60%">
+                                <span>=</span>
+                                <input type="text" class="resposta" value="" style="width:30%">
+                            </div>
+                        </fieldset>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <br>
+                        <div id="calculadora">
+                            <p>
+                                <button class="numeral btn btn-default" title="0"></button>
+                                <button class="numeral btn btn-default" title="1"></button>
+                                <button class="numeral btn btn-default" title="2"></button>
+                                <button class="numeral btn btn-default" title="3"></button>
+                                <button class="numeral btn btn-default" title="4"></button>
+                            </p>
+                            <p>
+                                <button class="numeral btn btn-default" title="5"></button>
+                                <button class="numeral btn btn-default" title="6"></button>
+                                <button class="numeral btn btn-default" title="7"></button>
+                                <button class="numeral btn btn-default" title="8"></button>
+                                <button class="numeral btn btn-default" title="9"></button>
+                            </p>
+                            <p>
+                                <button class="numeral btn btn-default" title="10"></button>
+                                <button class="numeral btn btn-default" title="11"></button>
+                                <button class="numeral btn btn-default" title="12"></button>
+                                <button class="numeral btn btn-default" title="13"></button>
+                                <button class="numeral btn btn-default" title="14"></button>
+                            </p>
+                            <p>
+                                <button class="numeral btn btn-default" title="15"></button>
+                                <button class="numeral btn btn-default" title="16"></button>
+                                <button class="numeral btn btn-default" title="17"></button>
+                                <button class="numeral btn btn-default" title="18"></button>
+                                <button class="numeral btn btn-default" title="19"></button>
+                            </p>
+                        </div>
+                    </td>
+                    <td>
+                        <br>
+                        <div id="operacoes">
+                            <p>
+                                <button class="operacao btn btn-info"> + </button>
+                            </p>
+                            <p>
+                                <button class="operacao btn btn-info"> - </button>
+                            </p>
+                            <p>
+                                <button class="operacao btn btn-info"> * </button>
+                            </p>
+                            <p>
+                                <button class="operacao btn btn-info"> / </button>
+                            </p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center">
+                        <button id="limpar" class="btn btn-danger" style="width: 40%">CLEAR</button>
+                        <button id="calcular" class="btn btn-success" style="width: 40%">=</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </center>
+
+<br><br><br>
+
+<a href="https://github.com/0xcf843ecf802c722f434d56/InupiaqNumbers" target="_blank">https://github.com/0xcf843ecf802c722f434d56/InupiaqNumbers</a>
+</body>
+</html>
