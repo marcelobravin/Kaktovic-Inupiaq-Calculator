@@ -1,0 +1,45 @@
+@font-face {
+    font-family: ki;
+    src: url(../font/InupiaqNumbers.ttf);
+}
+
+body, button {
+    font-family: ki;
+    margin-top: 30px;
+    background: #dedede;
+}
+
+p {
+    margin-bottom: -25px !important;
+}
+
+button {
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+}
+
+#visor {
+    border: 1px solid #aaaaaa;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+input {
+    border: none;
+    background: rgb(222, 235, 249);
+}
+
+table {
+    font-size: 20px;
+}
+
+#breguenaits {
+    background-color: white;
+    border-radius: 12px;
+    width: 380px;
+    box-shadow: 0px 0px 20px gray;
+    padding: 20px 20px 20px 20px;
+}
