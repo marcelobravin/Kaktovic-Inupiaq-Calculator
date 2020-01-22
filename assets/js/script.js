@@ -23,8 +23,14 @@ $(document).ready(function(){
     /* Adiciona simbolo da operacao */
     $(".operacao").click(function()
     {
+        let isOP =  $("#termo").val().substr(-2,1);
+        if (isOP === "+" || isOP === "-" || isOP === "*" || isOP === "/") {
+            return false;
+        }
+
         var operacaoSelecionada = $(this).text();
-        var x = $("#termo").val();
+        let x    = $("#termo").val();
+
         $("#termo").val(x+""+  operacaoSelecionada);
     });
 
@@ -54,9 +60,14 @@ function calcularController ( stringConta )
     let vetorConta = stringConta.split(' ');
     let keyOperador = posicaoOperador(vetorConta);
 
-    if(!keyOperador) {
+    if(!keyOperador)
+    {
         $("#resposta").attr({ 'title': stringConta.toString() });
-        $("#resposta").val( ki_encode( stringConta.toString() ) );
+
+        let s = "";
+        if ( parseInt(stringConta) < 0 ) { s = "- " }
+
+        $("#resposta").val( s + ki_encode( Math.abs(stringConta).toString()) );
         return true;
     }
 
@@ -82,7 +93,7 @@ function calcularController ( stringConta )
             break;
     }
 
-    var stringConta2 = ajustaTermo(vetorConta, parseInt(keyOperador), resultado )
+    var stringConta2 = ajustaTermo(vetorConta, parseInt(keyOperador), resultado );
 
     calcularController (stringConta2)
 
@@ -131,10 +142,12 @@ function ajustaTermo ( vetorConta, keyOperador, resultado )
 
     for (let i = 0; i < vetorConta.length; ++i) {
 
+        // Adiciona o resultado no vetor
         if (i === min) {
-            vetorConta[min] = resultado.toString()
+            vetorConta[min] = resultado.toString();
         }
 
+        // Remove o Operador e o N2
         if (i === keyOperador) {
             vetorConta.splice(i, 2);
         }
@@ -298,7 +311,7 @@ function ki_decode ( ki_number )
     
     // converte caracteres
     for (let i = 0; i < v_ki.length; i++) {
-        v_dec[i] = numeros[v_ki[i]];
+        v_dec[i] = Math.abs(numeros[v_ki[i]]);
         v_prod[i] = v_dec[i] * v_calc[i]
     }
 
