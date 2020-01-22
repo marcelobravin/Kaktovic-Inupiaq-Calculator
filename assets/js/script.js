@@ -1,68 +1,51 @@
 $(document).ready(function(){
 
     /* Coloca os numeros e simbolos no palco */
-    $("#calculadora .numeral").click(function() {
-        var simb = $(this).text(); // simbolo selecionado
-        var num = $(this).attr('title'); // numero do simbolo selecionado
-
-        console.log( num );
-
-        var x = $("#termo").val(); // simbolos contidos no palco
-        // var y = $("#decimal .termo").val(); // numeros contidos no palco
-
-        $("#termo").val(x+""+simb);
-        // $("#decimal .termo").val(y+""+num);
+    $("#calculadora .numeral").click(function() 
+    {
+        $("#termo").removeAttr('title');
+        var simb = $(this).text();
+        var x = $("#termo").val();
+        var expression = x+""+simb; 
+        var dec_termo = ki_to_decimal_expression(expression)
+        $("#termo").val(expression);
+        $("#termo").attr({ 'title': dec_termo.toString() });
     });
 
     /* Botao limpar */
     $("#limpar").click(function(){
         $("#termo, #resposta").val("");
+        $("#termo").removeAttr('title');
+        $("#resposta").removeAttr('title');
     });
 
     /* Adiciona simbolo da operacao */
     $(".operacao").click(function(){
         var operacaoSelecionada = $(this).text();
-
         var x = $("#termo").val();
-        // var y = $("#decimal .termo").val();
-
         $("#termo").val(x+""+  operacaoSelecionada);
-        // $("#decimal .termo").val(y+""+ operacaoSelecionada);
     });
 
     /* Calcula */
-    /* TODO multiplas operacoes */
     $("#calcular").click(function(){
-        // var res = $("#decimal .termo").val();
-       
-        // return false;
-
-        // var equacao = KITodecimalHelper( $("#termo").val() );
-
-
-
-
-        calcularController ( x );
-
+        $("#resposta").removeAttr('title');
+        var ki_termo = $("#termo").val();
+        var dec_termo = ki_to_decimal_expression(ki_termo)
+        
+        calcularController ( dec_termo );
     });
 
 });
 
-
-
-
-function calcularController (stringConta) {
-
-    
+function calcularController ( stringConta ) 
+{
     var vetorConta = stringConta.split(' ');
-
     var keyOperador = posicaoOperador(vetorConta)
 
     if(!keyOperador) {
-//        $("#resposta").val(decimalToKIHelper(stringConta)); //////////// aguardando 
-        $("#resposta").val(stringConta);
-
-        return false;
+        $("#resposta").attr({ 'title': stringConta.toString() });
+        $("#resposta").val( ki_encode( stringConta.toString() ) );
+        return true;
     }
 
     var n1 = vetorConta[keyOperador - 1];
@@ -89,15 +72,12 @@ function calcularController (stringConta) {
 
     var stringConta2 = ajustaTermo(vetorConta, parseInt(keyOperador), resultado )
 
-    // console.log(stringConta2);
-
     calcularController (stringConta2)
 
 }
 
-function posicaoOperador(array) {
-
-
+function posicaoOperador ( array ) 
+{
     if( jQuery.inArray( "*", array ) > 0 ){
         return array.indexOf("*");
     }
@@ -117,8 +97,8 @@ function posicaoOperador(array) {
     return false;
 }
 
-function ajustaTermo(vetorConta, keyOperador, resultado) {
-
+function ajustaTermo ( vetorConta, keyOperador, resultado ) 
+{
     var min = keyOperador - 1;
 
     for (let i = 0; i < vetorConta.length; ++i) {
@@ -136,9 +116,8 @@ function ajustaTermo(vetorConta, keyOperador, resultado) {
 
 }
 
-
-
-function decimal_to_ki_expression ( str ) {
+function decimal_to_ki_expression ( str ) 
+{
 
     var vetorConta = str.split(' ');
 
@@ -151,50 +130,45 @@ function decimal_to_ki_expression ( str ) {
 
 }
 
+function ki_to_decimal_expression( ki_expressao ) {
 
-function ki_to_decimal_expression( str ) {
-    var vetorConta = str.split(' ');
+    var vetorConta = ki_expressao.split(' ');
 
     for (let i = 0; i < vetorConta.length; i++) {
-        var number = array[i].isNaN();
-        vetorConta[i] = ki_dencode(number)
+
+        str = ki_decode(vetorConta[i])
+
+        if(is_Int(str)){
+             vetorConta[i] = str
+        } else {
+            vetorConta[i] = vetorConta[i]    
+        }
     }
 
     return  vetorConta.join(' ');
 }
 
+function is_Int(num) 
+{
+    if (typeof num !== 'number') {
+        return false; 
+    }
+   
+   return !isNaN(num) && parseInt(Number(num)) == num && !isNaN(parseInt(num, 10));
+ }
 
-
-
-
-function returnKI(dec_num) {
-    var resp = convertDecimalToKI(dec_num);
-
-    var numeroKI = "";
-    
-    resp.each(function(){
-        numeroKI += ki_encode ( dec_number );
-    });
-
-    return numeroKI;
-}
-
-
-
-
-
-function ki_encode ( dec_number ) {
-
+function ki_encode ( dec_number ) 
+{
     var simbulos = {
-           0 : "",  1 : "",  2 : "",  3 : "",  4 : "",  5 : "",  6 : "",  7 : "",  8 : "",  9 : ""
-        , 10 : "", 11 : "", 12 : "", 13 : "", 14 : "", 15 : "", 16 : "", 17 : "", 18 : "", 19 : ""
+           0 : "",   1 : "",   2 : "",   3 : "",   4 : "",   5 : "",   6 : "",   7 : "",   8 : "",   9 : ""
+        , 10 : "",  11 : "",  12 : "",  13 : "",  14 : "",  15 : "",  16 : "",  17 : "",  18 : "",  19 : ""
     }
     
     // Converter de base 10 para base 20
     var numeros = []
     var simbs = [];
 
-    function transformBase20(dec_num) { // 20
+    function transformBase10toBase20(dec_num) { // 20
         
         var resultado = parseInt(dec_num / 20)    
         var sobra     = dec_num % 20
@@ -205,97 +179,77 @@ function ki_encode ( dec_number ) {
             return "false"
         }
         
-        transformBase20(resultado)
+        transformBase10toBase20(resultado)
     }
 
-    transformBase20(dec_number)
+    transformBase10toBase20(dec_number)
 
     for (let i = 0; i < numeros.length; i++) {
         simbs[i] = simbulos[numeros[i]]
     }
     
-    $("#resposta").val(simbs.reverse().join(''));
+    return simbs.reverse().join('');
 }
 
 
-function ki_decode ( ki_number ) {
-    
+function ki_decode ( ki_number ) 
+{
+    var v_ki = ki_number.split('');
+
     var numeros = {
-         "" :  0, "" :  1, "" :  2, "" :  3, "" :  4, "" :  5, "" :  6, "" :  7, "" :  8, "" :  9
-        ,"" : 10, "" : 11, "" : 12, "" : 13, "" : 14, "" : 15, "" : 16, "" : 17, "" : 18, "" : 19
+          "" :  0, "" :  1, "" :  2, "" :  3, "" :  4, "" :  5, "" :  6, "" :  7, "" :  8, "" :  9
+        , "" : 10, "" : 11, "" : 12, "" : 13, "" : 14, "" : 15, "" : 16, "" : 17, "" : 18, "" : 19
     }
 
-    // if( ki_number < 20 && ki_number > -1){
-        return numeros[ki_number];
-    // }
+    // Converter de base 10 para base 20
+    let p_math = 1;
+    let v_calc = [1];
+    let v_dec  = [];
+    let v_prod = [];
 
-    return false;
+    // monta base de multiplicação
+    for (let i = 1; i < v_ki.length; i++) {
+        p_math    = parseInt(p_math * 20)
+        v_calc[i] = p_math
+    }
     
-    
-    
-    
-    var vetorSimbolos = [
-        { simbolo: ""   , valor:  0 }
-        , { simbolo: "" , valor:  1 }
-        , { simbolo: "" , valor:  2 }
-        , { simbolo: "" , valor:  3 }
-        , { simbolo: "" , valor:  4 }
-        , { simbolo: "" , valor:  5 }
-        , { simbolo: "" , valor:  6 }
-        , { simbolo: "" , valor:  7 }
-        , { simbolo: "" , valor:  8 }
-        , { simbolo: "" , valor:  9 }
-        , { simbolo: "" , valor: 10 }
-        , { simbolo: "" , valor: 11 }
-        , { simbolo: "" , valor: 12 }
-        , { simbolo: "" , valor: 13 }
-        , { simbolo: "" , valor: 14 }
-        , { simbolo: "" , valor: 15 }
-        , { simbolo: "" , valor: 16 }
-        , { simbolo: "" , valor: 17 }
-        , { simbolo: "" , valor: 18 }
-        , { simbolo: "" , valor: 19 }
-    ];
+    // converte caracteres
+    for (let i = 0; i < v_ki.length; i++) {
+        v_dec[i] = numeros[v_ki[i]];
+        v_prod[i] = v_dec[i] * v_calc[i]
+    }
 
-    var n  = vetorSimbolos[resposta]['simbolo'];
-    // if ( respostaDecimal > 19 ) {
-    //     n += vetorSimbolos[sobra]['simbolo'];
-    // }
-
-    return n;
+    const reducer = (accumulator, currentValue) => accumulator + currentValue;
+    // console.log(v_calc, v_dec, v_prod, v_prod.reduce(reducer))
+    return v_prod.reduce(reducer)
 }
 
-
-
-function somaService(n1, n2) {
+function somaService ( n1, n2 ) 
+{
     return parseInt(n1) + parseInt(n2);
 }
 
-
-function subtrairService(n1, n2) {
+function subtrairService ( n1, n2 ) 
+{
     return parseInt(n1) - parseInt(n2);
 }
 
-
-function multplicarService(n1, n2) {
+function multplicarService ( n1, n2 ) 
+{
     return parseInt(n1) * parseInt(n2);
 }
 
-
-function dividirService(n1, n2) {
-    return parseInt(n1) / parseInt(n2); ///////////////////////
-
+function dividirService ( n1, n2 ) 
+{
+    return parseInt(n1) / parseInt(n2);
 
     if ( resposta > 19 ) {
         sobra = resposta % 20;
         resposta = parseInt(resposta / 20);
     }
 
-
     if (op == '/') {
         console.log(" divisão "+ resposta + " sobra: "+sobra);
     }
     console.log( respostaDecimal );
 }
-
-
