@@ -16,7 +16,17 @@ p {
 button {
     width: 50px;
     height: 50px;
-    font-size: 30px;
+    font-size: 26px !important;
+}
+
+button:hover {
+    font-weight: bold;
+    background-color: #b5b0b0;
+    color: white;
+}
+
+.btn-circle {
+    border-radius: 35%;
 }
 
 #visor {
@@ -30,9 +40,6 @@ button {
 input {
     border: none;
     background: rgb(222, 235, 249);
-}
-
-table {
     font-size: 20px;
 }
 

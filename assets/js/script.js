@@ -1,4 +1,9 @@
+// ----------------------------------------------
+//  VIEWS =
+// ----------------------------------------------
 $(document).ready(function(){
+
+    $('[data-toggle="popover"]').popover();   
 
     /* Coloca os numeros e simbolos no palco */
     $("#calculadora .numeral").click(function() 
@@ -16,8 +21,7 @@ $(document).ready(function(){
     $("#limpar").click(function()
     {
         $("#termo, #resposta").val("");
-        $("#termo").removeAttr('title');
-        $("#resposta").removeAttr('title');
+        $("#termo, #resposta").removeAttr('title');
     });
 
     /* Adiciona simbolo da operacao */
@@ -29,9 +33,9 @@ $(document).ready(function(){
         }
 
         var operacaoSelecionada = $(this).text();
-        let x    = $("#termo").val();
+        let x = $("#termo").val();
 
-        $("#termo").val(x+""+  operacaoSelecionada);
+        $("#termo").val( x+""+ operacaoSelecionada );
     });
 
     /* Calcula */
@@ -45,6 +49,19 @@ $(document).ready(function(){
     });
 });
 
+function imprime_termo()
+{}
+
+/**
+ * Print Result
+ * @param st_term
+ */
+function printResult(st_term)
+{
+    $("#resposta").attr({ 'title': st_term.toString() });
+    $("#resposta").val( ki_encode( Math.abs(st_term).toString()) );
+}
+
 
 // ----------------------------------------------
 //  CONTROLLER =
@@ -52,51 +69,46 @@ $(document).ready(function(){
 
 /**
  * calcularController
- * @param stringConta
+ * @param st_term
  * @returns {boolean}
  */
-function calcularController ( stringConta )
+function calcularController ( st_term )
 {
-    let vetorConta = stringConta.split(' ');
-    let keyOperador = posicaoOperador(vetorConta);
+    let v_term = st_term.split(' ');
+    let k_operator = posicaoOperador(v_term);
 
-    if(!keyOperador)
+    if(!k_operator)
     {
-        $("#resposta").attr({ 'title': stringConta.toString() });
-
-        let s = "";
-        if ( parseInt(stringConta) < 0 ) { s = "- " }
-
-        $("#resposta").val( s + ki_encode( Math.abs(stringConta).toString()) );
+        printResult(st_term);
         return true;
     }
 
-    var n1 = vetorConta[keyOperador - 1];
-    var n2 = vetorConta[keyOperador + 1];
-    var op = vetorConta[keyOperador];
+    var n1 = v_term[k_operator - 1];
+    var n2 = v_term[k_operator + 1];
+    var op = v_term[k_operator];
 
+    /* Execute operations in algebric order */
     switch (op) {
         case "*":
-            var resultado = multplicar(n1, n2);
+            var result = multiply(n1, n2);
             break;
 
         case "/":
-            var resultado = dividir(n1, n2);
+            var result = division(n1, n2);
             break;
 
         case "+":
-            var resultado = somar(n1, n2);
+            var result = add(n1, n2);
             break;
 
         case "-":
-            var resultado = subtrair(n1, n2);
+            var result = subtract(n1, n2);
             break;
     }
 
-    var stringConta2 = ajustaTermo(vetorConta, parseInt(keyOperador), resultado );
+    var st_term2 = ajustaTermo(v_term, parseInt(k_operator), result );
 
-    calcularController (stringConta2)
-
+    calcularController (st_term2)
 }
 
 // ----------------------------------------------
@@ -104,9 +116,9 @@ function calcularController ( stringConta )
 // ----------------------------------------------
 
 /**
- * posicaoOperador
+ * Ordena posicao dos operadores
  * @param array
- * @returns {*}
+ * @returns index
  */
 function posicaoOperador ( array )
 {
@@ -131,82 +143,78 @@ function posicaoOperador ( array )
 
 /**
  * ajustaTermo
- * @param vetorConta
- * @param keyOperador
- * @param resultado
+ * @param v_term
+ * @param k_operator
+ * @param result
  * @returns {string}
  */
-function ajustaTermo ( vetorConta, keyOperador, resultado )
+function ajustaTermo ( v_term, k_operator, result )
 {
-    var min = keyOperador - 1;
+    var min = k_operator - 1;
 
-    for (let i = 0; i < vetorConta.length; ++i) {
+    for (let i = 0; i < v_term.length; ++i) {
 
-        // Adiciona o resultado no vetor
+        // Adiciona o result no vetor
         if (i === min) {
-            vetorConta[min] = resultado.toString();
+            v_term[min] = result.toString();
         }
 
         // Remove o Operador e o N2
-        if (i === keyOperador) {
-            vetorConta.splice(i, 2);
+        if (i === k_operator) {
+            v_term.splice(i, 2);
         }
     }
 
-    return  vetorConta.join(' ');
-
+    return  v_term.join(' ');
 }
 
-
 /**
- * somar
+ * add
  * @param n1
  * @param n2
  * @returns {number}
  */
-function somar ( n1, n2 )
+function add ( n1, n2 )
 {
     return parseInt(n1) + parseInt(n2);
 }
 
 /**
- * subtrair
+ * subtract
  * @param n1
  * @param n2
  * @returns {number}
  */
-function subtrair ( n1, n2 )
+function subtract ( n1, n2 )
 {
     return parseInt(n1) - parseInt(n2);
 }
 
 /**
- * multplicar
+ * multiply
  * @param n1
  * @param n2
  * @returns {number}
  */
-function multplicar ( n1, n2 )
+function multiply ( n1, n2 )
 {
     return parseInt(n1) * parseInt(n2);
 }
 
 /**
- * dividir
+ * division
  * @param n1
  * @param n2
  * @returns {number}
  */
-function dividir ( n1, n2 )
+function division ( n1, n2 )
 {
     return parseInt(n1) / parseInt(n2);
 }
 
-
 // ----------------------------------------------
 //  HELPERS =
 // ----------------------------------------------
-
 /**
  * ki_to_decimal_expression
  * @param ki_expressao
@@ -214,21 +222,20 @@ function dividir ( n1, n2 )
  */
 function ki_to_decimal_expression( ki_expressao )
 {
+    var v_term = ki_expressao.split(' ');
 
-    var vetorConta = ki_expressao.split(' ');
+    for (let i = 0; i < v_term.length; i++) {
 
-    for (let i = 0; i < vetorConta.length; i++) {
+        let str = ki_decode(v_term[i]);
 
-        let str = ki_decode(vetorConta[i]);
-
-        if(is_Int(str)){
-             vetorConta[i] = str
+        if ( is_Int(str) ) {
+             v_term[i] = str
         } else {
-            vetorConta[i] = vetorConta[i]    
+            v_term[i] = v_term[i]    
         }
     }
 
-    return  vetorConta.join(' ');
+    return  v_term.join(' ');
 }
 
 /**
@@ -246,6 +253,17 @@ function is_Int(num)
  }
 
 /**
+ * is Negative
+ * @param st_term
+ * @returns {string}
+ */
+function isNegative(st_term)
+{
+    if ( parseInt(st_term) < 0 ) { return "- "; }
+    return "";
+}
+
+/**
  * ki_encode
  * @param dec_number
  * @returns {string}
@@ -256,31 +274,73 @@ function ki_encode ( dec_number )
            0 : "",   1 : "",   2 : "",   3 : "",   4 : "",   5 : "",   6 : "",   7 : "",   8 : "",   9 : ""
         , 10 : "",  11 : "",  12 : "",  13 : "",  14 : "",  15 : "",  16 : "",  17 : "",  18 : "",  19 : ""
     };
-    
-    var numeros = [];
+
+    var int_numbers = [];
+    var float_numbers = [];
+
     var simbs = [];
 
-    function transformBase10toBase20(dec_num) {
-        
-        var resultado = parseInt(dec_num / 20);
-        var sobra     = dec_num % 20;
-    
-        numeros.push(sobra);
-        
-        if (resultado <= 0) {
+    // caso negativo cria sinal
+    var isNgt = isNegative ( parseInt(dec_number));
+
+    // ajustar floats / numeros grandes
+    var v_term = Math.abs(dec_number).toString().split('.');
+
+    // Convert INT numbers
+    function integer_Base10toBase20 ( dec_num )
+    {
+        let res = parseInt(dec_num) / 20;
+        let mod = parseInt(dec_num) % 20;
+
+        if (res <= 0) {
             return true;
         }
-        
-        transformBase10toBase20(resultado)
+
+        int_numbers.push(mod.toString());
+
+        integer_Base10toBase20(res)
     }
 
-    transformBase10toBase20(dec_number);
+    // Convert Float numbers
+    function float_Base10toBase20 ( dec_num )
+    {
+        let res = parseInt(dec_num) / 20;
+        let mod = parseInt(dec_num) % 20;
 
-    for (let i = 0; i < numeros.length; i++) {
-        simbs[i] = simbulos[numeros[i]]
+        if (res <= 0) {
+            return true;
+        }
+
+        float_numbers.push(mod.toString());
+
+        float_Base10toBase20(res)
     }
-    
-    return simbs.reverse().join('');
+
+    /* Se tiver mais de uma posicao e um float (porque foi quebrado por ponto) */
+    if ( v_term.length > 1) {
+        integer_Base10toBase20(v_term[0]);
+        float_Base10toBase20(v_term[1]);
+
+        for (let i = 0; i < float_numbers.length; i++) {
+            simbs.push(simbulos[Math.abs(float_numbers[i])]);
+        }
+        simbs.push(".");
+        for (let i = 0; i < int_numbers.length; i++) {
+            simbs.push(simbulos[Math.abs(int_numbers[i])]);
+        }
+        console.log(simbs);
+
+        return isNgt+simbs.reverse().join('');
+    }
+
+    integer_Base10toBase20(v_term[0]);
+
+    for (let i = 0; i < int_numbers.length; i++) {
+        simbs.push(simbulos[Math.abs(int_numbers[i])])
+    }
+
+    // convert em simbulos
+    return isNgt+simbs.reverse().join(''); // corrigir ::::::::::::::::::::::::::::::: isNgt
 }
 
 /**
