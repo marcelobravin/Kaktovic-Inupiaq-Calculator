@@ -2,113 +2,134 @@
 //  VIEWS =
 // ----------------------------------------------
 $(document).ready(function(){
+    // Shows tooltip of the buttons
+    $('[data-toggle="popover"]').popover();
 
-    $('[data-toggle="popover"]').popover();   
-
-    /* Coloca os numeros e simbolos no palco */
-    $("#calculadora .numeral").click(function() 
+    /* Insert the numbers clicked on the calculating area */
+    $(".numeral").click(function()
     {
-        $("#termo").removeAttr('title');
-        var simb = $(this).text();
-        var x = $("#termo").val();
-        var expression = x+""+simb; 
-        var dec_termo = ki_to_decimal_expression(expression);
-        $("#termo").val(expression);
-        $("#termo").attr({ 'title': dec_termo.toString() });
+        var ki_clicked_simbol = $(this).text();
+        var i_clicked_simbol  = $(this).data('content');
+
+        var valor  = $("#termo").val();
+        var titulo = $("#termo").attr('title');
+        
+        var ki_expression = valor +""+ ki_clicked_simbol;
+        var dec_expression = titulo +""+i_clicked_simbol;
+
+        $("#termo").val(ki_expression);
+        $("#termo").attr( 'title', dec_expression );
+    });
+
+    // Add simbolo da operacao
+    $(".operacao").click(function()
+    {
+        var operacaoSelecionada = $(this).text();
+        let lastChar = $("#termo").attr("title").substr(-2,1);
+
+        if (lastChar == "" && operacaoSelecionada!='-') { // The first char may be a minus
+            return false;
+        } else {
+
+            if (lastChar == "+" || lastChar == "-" || lastChar == "×" || lastChar == "÷") { // blocks consecutive operators
+                return false;
+            }
+        }
+
+        $("#termo").val( $("#termo").val()+operacaoSelecionada );
+        $("#termo").attr( 'title',  $("#termo").attr( 'title')+operacaoSelecionada );
+    });
+
+    // Executa calculo
+    $("#calcular").click(function()
+    {
+        var dec_termo = $("#termo").attr('title');
+        if ( dec_termo == "" ) {
+            return false;
+        }
+        preparaCampo("");
+        calcularController();
     });
 
     /* Botao limpar */
     $("#limpar").click(function()
     {
         $("#termo, #resposta").val("");
-        $("#termo, #resposta").removeAttr('title');
-    });
-
-    /* Adiciona simbolo da operacao */
-    $(".operacao").click(function()
-    {
-        let isOP =  $("#termo").val().substr(-2,1);
-        if (isOP === "+" || isOP === "-" || isOP === "*" || isOP === "/") {
-            return false;
-        }
-
-        var operacaoSelecionada = $(this).text();
-        let x = $("#termo").val();
-
-        $("#termo").val( x+""+ operacaoSelecionada );
-    });
-
-    /* Calcula */
-    $("#calcular").click(function()
-    {
-        $("#resposta").removeAttr('title');
-        var ki_termo = $("#termo").val();
-        var dec_termo = ki_to_decimal_expression(ki_termo);
-        
-        calcularController ( dec_termo );
+        $("#termo, #resposta").attr('title', '');
     });
 });
 
-function imprime_termo()
-{}
+function preparaCampo() {
+    let valor = $("#termo").val();
+    var valores = valor.split('+'); //////////////////////////////////////
+
+    var ultimoValor = valores[valores.length-1];
+
+    var x = $("#termo").attr('title');
+    console.log(x);
+    comeco = x.substr(0, x.indexOf("+") );
+    console.log(x);
+    // x = "+";
+
+    fim = x.substr(x.indexOf("+"));
+    // alert("comeco "+ comeco);
+    // alert("fim "+ fim);
+
+    var corrigeUltimoTituloDecimal = corrigeUltimoTitulo2(ultimoValor);
+
+    $("#termo").attr('title', comeco +"+" +corrigeUltimoTituloDecimal);
+}
+
+
+function novoAtualizar() {
+    let valor = $("#termo").val();
+    var valores = valor.split('+'); //////////////////////////////////////
+
+    var ultimoValor = valores[valores.length-1];
+    var corrigeUltimoTituloDecimal = corrigeUltimoTitulo2(ultimoValor);
+
+    let titulo = $("#termo").attr('title');
+    var titulos = titulo.split('+'); //////////////////////////////////////
+
+console.log(titulos);
+console.log(corrigeUltimoTituloDecimal);
+
+}
+
+function corrigeUltimoTitulo2(ki_expression)
+{
+    let v_term = ki_expression.toString().split('');
+    var concateno = "";
+    for (let i=0; i<v_term.length; i++) {
+        concateno += ki_decode(v_term[i]);
+    }
+    
+    var tituloDecimal = toDecimal2( concateno );
+    return tituloDecimal.toString();
+}
 
 /**
  * Print Result
- * @param st_term
+ * @param dec_number
  */
-function printResult(st_term)
+function printResult2(dec_number)
 {
-    $("#resposta").attr({ 'title': st_term.toString() });
-    $("#resposta").val( ki_encode( Math.abs(st_term).toString()) );
+    var x = ki_encode( dec_number );
+    var sinal = isNegative(dec_number); 
+    $("#resposta").val( sinal +""+ x );
+    $("#resposta").attr( 'title', dec_number.toString() );
 }
-
 
 // ----------------------------------------------
 //  CONTROLLER =
 // ----------------------------------------------
 
-/**
- * calcularController
- * @param st_term
- * @returns {boolean}
- */
-function calcularController ( st_term )
-{
-    let v_term = st_term.split(' ');
-    let k_operator = posicaoOperador(v_term);
-
-    if(!k_operator)
-    {
-        printResult(st_term);
-        return true;
-    }
-
-    var n1 = v_term[k_operator - 1];
-    var n2 = v_term[k_operator + 1];
-    var op = v_term[k_operator];
-
-    /* Execute operations in algebric order */
-    switch (op) {
-        case "*":
-            var result = multiply(n1, n2);
-            break;
-
-        case "/":
-            var result = division(n1, n2);
-            break;
-
-        case "+":
-            var result = add(n1, n2);
-            break;
-
-        case "-":
-            var result = subtract(n1, n2);
-            break;
-    }
-
-    var st_term2 = ajustaTermo(v_term, parseInt(k_operator), result );
-
-    calcularController (st_term2)
+function calcularController(decimal_expression) {
+    var decimal_expression = $("#termo").attr('title');
+    var newString = decimal_expression.replace(/÷/g, '/'); // corrects symbol
+    newString = decimal_expression.replace(/×/g, '*'); // corrects symbol
+    var decimal_result = eval(newString);
+    printResult2(decimal_result);
 }
 
 // ----------------------------------------------
@@ -122,50 +143,23 @@ function calcularController ( st_term )
  */
 function posicaoOperador ( array )
 {
-    if( jQuery.inArray( "*", array ) > 0 ){
-        return array.indexOf("*");
+    if ( jQuery.inArray( "×", array ) > 0 ) {
+        return array.indexOf("×");
     }
 
-    if( jQuery.inArray( "/", array ) > 0  ){
-        return array.indexOf("/");
+    if ( jQuery.inArray( "÷", array ) > 0 ) {
+        return array.indexOf("÷");
     }
 
-    if( jQuery.inArray( "+", array ) > 0  ){
+    if ( jQuery.inArray( "+", array ) > 0 ) {
         return array.indexOf("+");
     }
 
-    if( jQuery.inArray( "-", array ) > 0  ){
+    if ( jQuery.inArray( "-", array ) > 0 ) {
         return array.indexOf("-");
     }
 
     return false;
-}
-
-/**
- * ajustaTermo
- * @param v_term
- * @param k_operator
- * @param result
- * @returns {string}
- */
-function ajustaTermo ( v_term, k_operator, result )
-{
-    var min = k_operator - 1;
-
-    for (let i = 0; i < v_term.length; ++i) {
-
-        // Adiciona o result no vetor
-        if (i === min) {
-            v_term[min] = result.toString();
-        }
-
-        // Remove o Operador e o N2
-        if (i === k_operator) {
-            v_term.splice(i, 2);
-        }
-    }
-
-    return  v_term.join(' ');
 }
 
 /**
@@ -215,28 +209,6 @@ function division ( n1, n2 )
 // ----------------------------------------------
 //  HELPERS =
 // ----------------------------------------------
-/**
- * ki_to_decimal_expression
- * @param ki_expressao
- * @returns {string}
- */
-function ki_to_decimal_expression( ki_expressao )
-{
-    var v_term = ki_expressao.split(' ');
-
-    for (let i = 0; i < v_term.length; i++) {
-
-        let str = ki_decode(v_term[i]);
-
-        if ( is_Int(str) ) {
-             v_term[i] = str
-        } else {
-            v_term[i] = v_term[i]    
-        }
-    }
-
-    return  v_term.join(' ');
-}
 
 /**
  * validate is_Int
@@ -245,11 +217,13 @@ function ki_to_decimal_expression( ki_expressao )
  */
 function is_Int(num) 
 {
+    num = parseInt(num);
     if (typeof num !== 'number') {
-        return false; 
+        console.log(num + "typeof num !== 'number'");
+        return false;
     }
-   
-   return !isNaN(num) && parseInt(Number(num)) === num && !isNaN(parseInt(num, 10));
+
+    return !isNaN(num) && parseInt(Number(num)) === num && !isNaN(parseInt(num, 10));
  }
 
 /**
@@ -259,122 +233,67 @@ function is_Int(num)
  */
 function isNegative(st_term)
 {
-    if ( parseInt(st_term) < 0 ) { return "- "; }
+    if ( parseFloat(st_term) < 0 ) {
+        return "-";
+    }
     return "";
 }
 
-/**
- * ki_encode
- * @param dec_number
- * @returns {string}
- */
-function ki_encode ( dec_number )
-{
-    var simbulos = {
-           0 : "",   1 : "",   2 : "",   3 : "",   4 : "",   5 : "",   6 : "",   7 : "",   8 : "",   9 : ""
-        , 10 : "",  11 : "",  12 : "",  13 : "",  14 : "",  15 : "",  16 : "",  17 : "",  18 : "",  19 : ""
-    };
-
-    var int_numbers = [];
-    var float_numbers = [];
-
-    var simbs = [];
-
-    // caso negativo cria sinal
-    var isNgt = isNegative ( parseInt(dec_number));
-
-    // ajustar floats / numeros grandes
-    var v_term = Math.abs(dec_number).toString().split('.');
-
-    // Convert INT numbers
-    function integer_Base10toBase20 ( dec_num )
-    {
-        let res = parseInt(dec_num) / 20;
-        let mod = parseInt(dec_num) % 20;
-
-        if (res <= 0) {
-            return true;
-        }
-
-        int_numbers.push(mod.toString());
-
-        integer_Base10toBase20(res)
-    }
-
-    // Convert Float numbers
-    function float_Base10toBase20 ( dec_num )
-    {
-        let res = parseInt(dec_num) / 20;
-        let mod = parseInt(dec_num) % 20;
-
-        if (res <= 0) {
-            return true;
-        }
-
-        float_numbers.push(mod.toString());
-
-        float_Base10toBase20(res)
-    }
-
-    /* Se tiver mais de uma posicao e um float (porque foi quebrado por ponto) */
-    if ( v_term.length > 1) {
-        integer_Base10toBase20(v_term[0]);
-        float_Base10toBase20(v_term[1]);
-
-        for (let i = 0; i < float_numbers.length; i++) {
-            simbs.push(simbulos[Math.abs(float_numbers[i])]);
-        }
-        simbs.push(".");
-        for (let i = 0; i < int_numbers.length; i++) {
-            simbs.push(simbulos[Math.abs(int_numbers[i])]);
-        }
-        console.log(simbs);
-
-        return isNgt+simbs.reverse().join('');
-    }
-
-    integer_Base10toBase20(v_term[0]);
-
-    for (let i = 0; i < int_numbers.length; i++) {
-        simbs.push(simbulos[Math.abs(int_numbers[i])])
-    }
-
-    // convert em simbulos
-    return isNgt+simbs.reverse().join(''); // corrigir ::::::::::::::::::::::::::::::: isNgt
+function toDecimal(vigesimal) {
+    return parseFloat(vigesimal, 20).toString(10);
 }
 
-/**
- * ki_decode
- * @param ki_number
- * @returns {*}
- */
-function ki_decode ( ki_number ) 
-{
-    let v_ki = ki_number.split('').reverse();
-
-    let numeros = {
-          "" :  0, "" :  1, "" :  2, "" :  3, "" :  4, "" :  5, "" :  6, "" :  7, "" :  8, "" :  9
-        , "" : 10, "" : 11, "" : 12, "" : 13, "" : 14, "" : 15, "" : 16, "" : 17, "" : 18, "" : 19
-    };
-
-    // Converter de base 10 para base 20
-    let p_math = 1;
-    let v_calc = [1];
-    let v_dec  = [];
-    let v_prod = [];
-
-    // monta base de multiplicação
-    for (let i = 1; i < v_ki.length; i++) {
-        p_math    = parseInt(p_math * 20);
-        v_calc[i] = p_math
-    }
-    
-    // converte caracteres
-    for (let i = 0; i < v_ki.length; i++) {
-        v_dec[i] = Math.abs(numeros[v_ki[i]]);
-        v_prod[i] = v_dec[i] * v_calc[i]
-    }
-
-    const reducer = (accumulator, currentValue) => accumulator + currentValue;
-    return v_prod.reduce(reducer)
+function toDecimal2(decimal) {    
+    var vigesimal = decimal.toString(20);
+    return parseInt(vigesimal, 20);
 }
+
+function toVigesimal(decimal) {
+    return decimal.toString(20).toString(10);
+}
+
+function getKeyByValue(object, value) { 
+    return Object.keys(object).find(
+        key => object[key] === value
+    );
+}
+
+function ki_encode(dec_number) {
+    var vig_number = toVigesimal( Math.abs(dec_number) );
+
+    // In case the vigesimal result have multiple characters
+    var array = vig_number.split('');
+    var x = '';
+    for (let i=0; i<array.length; i++) {
+        x += simbolos[ array[i] ];
+    }
+
+    return x;
+}
+
+function ki_decode(simbolo) {
+    return getKeyByValue(simbolos, simbolo)
+}
+
+const simbolos = {
+       0 : ""
+    ,  1 : ""
+    ,  2 : ""
+    ,  3 : ""
+    ,  4 : ""
+    ,  5 : ""
+    ,  6 : ""
+    ,  7 : ""
+    ,  8 : ""
+    ,  9 : ""
+    , 'a': ""
+    , 'b': ""
+    , 'c': ""
+    , 'd': ""
+    , 'e': ""
+    , 'f': ""
+    , 'g': ""
+    , 'h': ""
+    , 'i': ""
+    , 'j': ""
+};

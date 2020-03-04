@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-    <title>Kaktovik Inupiaq Calculator</title>
+    <meta charset="UTF-8">
+    <title>Kaktovik Inupiaq Numbers Calculator</title>
     <link rel="shortcut icon" href="assets/images/calculadora.png" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/style.css">
-
-    
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    
     <script type="text/javascript" src="assets/js/script.js"></script>
-
 </head>
-
 <body>
-
     <center>
-        <h3>Calculadora Inupiaq Numbers</h3><br>
+        <h3>Kaktovik Inupiaq Numbers Calculator</h3>
+        <br>
         <div id="breguenaits" style="padding: 10px 10;">
             <table style="width: 335px;">
                 <tr style="background: rgb(222, 235, 249);">
@@ -26,13 +22,13 @@
                         <table style="width: 100%;">
                             <tr>
                                 <td colspan="2" style="border-bottom: 1px solid #bfbfbf;">
-                                    <input type="text" id="termo" value="" style="width:100%" readonly="readonly">
+                                    <input type="text" id="termo" value="" style="width:100%" readonly="readonly" title="" data-toggle="popover">
                                 </td>
                             </tr>
                             <tr>
                                 <td width="10%" class="text-center text-danger">=</td>
                                 <td width="90%">
-                                    <input type="text" id="resposta" value="" style="width:100%" readonly="readonly">
+                                    <input type="text" id="resposta" value="" style="width:100%" readonly="readonly" data-toggle="popover">
                                 </td>
                             </tr>
                         </table>
@@ -214,22 +210,31 @@
                     <td>
                         <div id="operacoes">
                             <div>
-                                <button class="operacao btn btn-info"> + </button>
+                                <button class="operacao btn btn-info">+</button>
                             </div>
                             <div>
-                                <button class="operacao btn btn-info"> - </button>
+                                <button class="operacao btn btn-info">-</button>
                             </div>
                             <div>
-                                <button class="operacao btn btn-info"> * </button>
+                                <button class="operacao btn btn-info">×</button>
                             </div>
                             <div>
-                                <button class="operacao btn btn-info"> / </button>
+                                <button class="operacao btn btn-info">÷</button>
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" class="text-center">
+
+                        <button
+                            class="numeral btn btn-warning"
+                            style="box-shadow: none"
+                            data-toggle="popover"
+                            data-trigger="hover"
+                            data-placement="top"
+                            data-content="."
+                        >.</button>
                         <button id="limpar" class="btn btn-danger" style="width: 40%">CLEAR</button>
                         <button id="calcular" class="btn btn-success" style="width: 40%">=</button>
                     </td>
@@ -245,6 +250,16 @@ Feita por: <br>
     <li>Marcelo Souza Bravin</li>
 </ul>
 Referências: <br>
-<a href="https://github.com/0xcf843ecf802c722f434d56/InupiaqNumbers" target="_blank">https://github.com/0xcf843ecf802c722f434d56/InupiaqNumbers</a>
+<ul>
+    <li>
+        Wikipedia: <a href="https://en.wikipedia.org/wiki/Kaktovik_Inupiaq_numerals" target="_blank">https://en.wikipedia.org/wiki/Kaktovik_Inupiaq_numerals</a>
+    </li>
+    <li>
+        Youtube - Why are these the best numbers?: <a href="https://www.youtube.com/watch?v=EyS6FfczH0Q" target="_blank">https://www.youtube.com/watch?v=EyS6FfczH0Q</a>
+    </li>
+    <li>
+        Font: <a href="https://github.com/0xcf843ecf802c722f434d56/InupiaqNumbers" target="_blank">https://github.com/0xcf843ecf802c722f434d56/InupiaqNumbers</a>
+    </li>
+</ul>
 </body>
 </html>
