@@ -3,8 +3,6 @@
 ## Matemática
 - tratar numeros fracionários
 - tratar numeros negativos
-- 3.33 numeros infinitamente longos
-    - retornar aproximadamente ≃
 - calculadora cientifica e financeira
     - √
 - novas funções . ( ) ^

@@ -88,7 +88,7 @@ function isNegative(st_term)
 function toDecimal(decimal)
 {
     var vigesimal = decimal.toString(20);
-    return parseInt(vigesimal, 20);
+    return parseFloat(vigesimal, 20);
 }
 
 function toVigesimal(decimal)

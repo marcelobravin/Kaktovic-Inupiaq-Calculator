@@ -57,7 +57,8 @@ $(document).ready(function(){
     $("#limpar").click(function()
     {
         $("#termo, #resposta").val("");
-        $("#termo, #resposta").attr('title', '');
+        $("#termo, #resposta, #simboloResultado").attr('title', '');
+        $("#simboloResultado").text( "=" );
     });
 });
 
@@ -108,7 +109,12 @@ function corrigeTitulo(vigesimalNumber)
     let v_term = vigesimalNumber.toString().split('');
     var concateno = "";
     for (let i=0; i<v_term.length; i++) {
-        concateno += ki_decode(v_term[i]);
+        
+        if ( v_term[i] == '.' ) {
+            concateno += '.';
+        } else {
+            concateno += ki_decode(v_term[i]);
+        }
     }
     
     var tituloDecimal = toDecimal( concateno );
@@ -125,6 +131,16 @@ function printResult(dec_number)
     var sinal = isNegative(dec_number); 
     $("#resposta").val( sinal +""+ num );
     $("#resposta").attr( 'title', dec_number.toString() );
+
+    var simboloResultado = "=";
+    var descricaoResultado = "";
+
+    if (dec_number.toString().length >= 18) {
+        simboloResultado = "≅";
+        descricaoResultado = "aproximadamente";
+    }
+    $("#simboloResultado").text( simboloResultado );
+    $("#simboloResultado").attr("title", descricaoResultado );
 }
 
 // ----------------------------------------------
