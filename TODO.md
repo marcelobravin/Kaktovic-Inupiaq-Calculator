@@ -7,9 +7,6 @@
     - √
 - novas funções . ( ) ^
 - adicionar contas decimais (1.1+1.1)
-- verificar divisão
-    contas que causam resultados incoerentes
-    // 1/1000
 
 ## Documentação
 - arrumar readme (ingles e bem descrito)
@@ -41,3 +38,33 @@
 - popover no resultado
 - código em ingles
 - internacionalização
+
+
+
+FACIL
+    maxlenght termos
+    trocar op
+    pow
+    rad
+    favicon
+    CDN
+
+
+
+I always use the CDN (Content Delivery Network) from Google. But just in case it's offline:
+
+Grab Google CDN's jQuery and fallback to local if necessary
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script>!window.jQuery && document.write('<script src="jquery-1.4.2.min.js"><\/script>')</script>
+
+
+
+
+script href="jquery.com/3/min.js" || local/js.min
+
+
+
+- verificar divisão
+    contas que causam resultados incoerentes
+    1 / 0.0000000001 ????????????? pq dá um numero gigante?
+        “Dividing by 0.1 is the same as multiplying by 10. This is because there are 10 tenths in a whole. Dividing by 0.01 is the same as multiplying by 100. This is because 0.01 is one hundredth and there are a hundred hundredths in a whole."
