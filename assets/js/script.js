@@ -5,20 +5,42 @@ $(document).ready(function(){
     // Shows tooltip of the buttons
     $('[data-toggle="popover"]').popover();
 
-    /* Insert the numbers clicked on the calculating area */
+    // Insert the numbers clicked on the calculating area
     $(".numeral").click(function()
     {
         var ki_clicked_simbol = $(this).text();
-        var i_clicked_simbol  = $(this).data('content');
-
         var valor  = $("#termo").val();
-        var titulo = $("#termo").attr('title');
-        
-        var ki_expression = valor +""+ ki_clicked_simbol;
-        var dec_expression = titulo +""+i_clicked_simbol;
 
+        var ki_expression = valor +""+ ki_clicked_simbol;
         $("#termo").val(ki_expression);
-        $("#termo").attr( 'title', dec_expression );
+        preparaCampo();
+    });
+
+    // Add dot symbol
+    $("#dot").click(function()
+    {
+        var ki_clicked_simbol = ".";
+        var valor  = $("#termo").val();
+
+        // count dots on the last term
+        var ultimoValorVigesimal = getLastTerm(valor);
+        if ( existePontos(ultimoValorVigesimal)>0 ) {
+            return false;
+        }
+
+        // It blocks adding consecutive dot symbols
+        let lastChar = valor.substr(-1,1);
+        if (lastChar == ".") {
+            return false;
+        } else {
+            // It blocks adding consecutive operation
+            if (lastChar == "+" || lastChar == "-" || lastChar == "×" || lastChar == "÷" || lastChar == "") {
+                ki_clicked_simbol = ki_encode('0') +ki_clicked_simbol;
+            }
+        }
+
+        var ki_expression = valor +""+ ki_clicked_simbol;
+        $("#termo").val(ki_expression);
         preparaCampo();
     });
 
@@ -33,7 +55,7 @@ $(document).ready(function(){
             return false;
         } else {
             // It blocks adding consecutive operation symbols
-            if (lastChar == "+" || lastChar == "-" || lastChar == "×" || lastChar == "÷") { // blocks consecutive operators
+            if (lastChar == "+" || lastChar == "-" || lastChar == "×" || lastChar == "÷" || lastChar == ".") { // blocks consecutive operators
                 return false;
             }
         }
@@ -53,7 +75,7 @@ $(document).ready(function(){
         calcularController( decimal_expression );
     });
 
-    /* Button clear */
+    // Button clear
     $("#limpar").click(function()
     {
         $("#termo, #resposta").val("");
@@ -69,17 +91,16 @@ function preparaCampo()
     var tituloInicial = titulo.substring(0,lastOperatorTitle+1);
 
     let valor = $("#termo").val();
-    var lastOperatorValue = ultimoOperador(valor);
-    var ultimoValorVigesimal = valor.substring(lastOperatorValue+1, valor.length);
+    ultimoValorVigesimal = getLastTerm(valor);
 
     var corrigeUltimoTituloDecimal = corrigeTitulo(ultimoValorVigesimal);
     $("#termo").attr('title', tituloInicial +""+ corrigeUltimoTituloDecimal);
 }
 
 /**
- * Ordena posicao dos operadores
- * @param array
- * @returns index
+ * Return position of the last operator
+ * @param string
+ * @returns int
  */
 function ultimoOperador( str )
 {
@@ -109,16 +130,16 @@ function corrigeTitulo(vigesimalNumber)
     let v_term = vigesimalNumber.toString().split('');
     var concateno = "";
     for (let i=0; i<v_term.length; i++) {
-        
         if ( v_term[i] == '.' ) {
             concateno += '.';
         } else {
             concateno += ki_decode(v_term[i]);
         }
     }
-    
-    var tituloDecimal = toDecimal( concateno );
-    return tituloDecimal.toString();
+
+    var v = toVigesimal(concateno);
+    var d = toDecimal(v);
+    return d;
 }
 
 /**
@@ -127,9 +148,9 @@ function corrigeTitulo(vigesimalNumber)
  */
 function printResult(dec_number)
 {
-    var num = ki_encode( dec_number );
+    var ki_num = ki_encode( dec_number );
     var sinal = isNegative(dec_number); 
-    $("#resposta").val( sinal +""+ num );
+    $("#resposta").val( sinal +""+ ki_num );
     $("#resposta").attr( 'title', dec_number.toString() );
 
     var simboloResultado = "=";
@@ -139,6 +160,7 @@ function printResult(dec_number)
         simboloResultado = "≅";
         descricaoResultado = "aproximadamente";
     }
+    
     $("#simboloResultado").text( simboloResultado );
     $("#simboloResultado").attr("title", descricaoResultado );
 }
@@ -146,11 +168,10 @@ function printResult(dec_number)
 // ----------------------------------------------
 //  CONTROLLER =
 // ----------------------------------------------
-
 function calcularController(decimal_expression)
 {
-    var newString = decimal_expression.replace(/÷/g, '/'); // corrects symbol
-    newString     = newString.replace(/×/g, '*'); // corrects symbol
+    var newString = corrigeSimbolo(decimal_expression);
     var decimal_result = eval(newString);
+    
     printResult(decimal_result);
 }

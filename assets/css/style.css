@@ -50,20 +50,3 @@ input {
     box-shadow: 0px 0px 20px gray;
     padding: 20px 20px 20px 20px;
 }
-
-
-
-/*
-  body{
-      transition: 5s;
-    animation: rodar 1.5s linear infinite; 
-  }
-  @keyframes rodar {
-    from {
-        transform:rotate(0deg);
-    }
-    to {
-        transform:rotate(360deg);
-    }
-}
-*/

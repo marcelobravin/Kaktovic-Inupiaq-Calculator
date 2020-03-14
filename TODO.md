@@ -2,11 +2,11 @@
 
 ## Matemática
 - tratar numeros fracionários
-- tratar numeros negativos
+    - adicionar contas entre frações (1.1+1.1)
+OK - tratar numeros negativos
 - calculadora cientifica e financeira
     - √
 - novas funções . ( ) ^
-- adicionar contas decimais (1.1+1.1)
 
 ## Documentação
 - arrumar readme (ingles e bem descrito)
@@ -68,3 +68,39 @@ script href="jquery.com/3/min.js" || local/js.min
     contas que causam resultados incoerentes
     1 / 0.0000000001 ????????????? pq dá um numero gigante?
         “Dividing by 0.1 is the same as multiplying by 10. This is because there are 10 tenths in a whole. Dividing by 0.01 is the same as multiplying by 100. This is because 0.01 is one hundredth and there are a hundred hundredths in a whole."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://www.youtube.com/watch?v=pPGKI_S1_kk
+
+
+bug conhecido
+    ok - . + .
+         .1 + .1
+
+    ok-0.1+0.2 = 1.3
+        0.30000000000000004
+
+    solução davi
+        quebrar pelo ponto e fazer sem float
+        substituir eval por DaviEval
+
+    https://stackoverflow.com/questions/588004/is-floating-point-math-broken
+
+
+    ok - .+
+
+    0.19+0.x1 (está comendo zeros a esquerda do ponto decimal)
