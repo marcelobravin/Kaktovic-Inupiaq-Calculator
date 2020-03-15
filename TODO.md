@@ -104,3 +104,31 @@ bug conhecido
     ok - .+
 
     0.19+0.x1 (está comendo zeros a esquerda do ponto decimal)
+
+
+     18 numeros 
+
+
+    1-0.1 =0.9 deveria ser 0.19
+
+
+
+    .19;
+
+
+    421.421+0.842 calculos interpretam q 10x0.1 já aumenta, deveria ser 20
+
+
+
+    exibir valores das casas no resultado
+    ///
+    1 unidade
+    1 20
+    1 400
+
+
+
+
+    TODO
+- nomes das letras
+- Colocar os links de contato dos devs

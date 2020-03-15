@@ -45,7 +45,9 @@ function ki_encode(dec_number)
 function ki_decode(simbolo)
 {
     var valorVigesimal = getKeyByValue(simbolos, simbolo);
-    return toDecimal(valorVigesimal);
+    if (typeof valorVigesimal != 'undefined') {
+        return toDecimal(valorVigesimal.toString());
+    }
 }
 
 // ----------------------------------------------
@@ -61,10 +63,8 @@ function is_Int(num)
 {
     num = parseInt(num);
     if (typeof num !== 'number') {
-        console.log(num + "typeof num !== 'number'");
         return false;
     }
-
     return !isNaN(num) && parseInt(Number(num)) === num && !isNaN(parseInt(num, 10));
  }
 
@@ -83,15 +83,39 @@ function isNegative(st_term)
 
 function toDecimal(decimal) // 'aa' = 210
 {
-    var v = decimal.split('.');
+    var v = decimal.toString().split('.');
+
+    // before coma
     var result = parseInt(v[0], 20);
 
+    // after coma
     if (v.length > 1) {
         result += ".";
         if ( v[1] != '' ) {
-            result += parseInt(v[1], 20);
+            var numeroOriginal = v[1];
+            var numConvertido = parseInt(v[1], 20);
+
+            numeroOriginal = numeroOriginal.toString();
+            var tamanhoDecimal = numeroOriginal.length;
+
+            // if (v[1] >= 10) {
+            //     numConvertido = toVigesimal(v[1]); // causa erro na conversão para decimal
+            // }
+
+
+            // // console.log(v[1]);
+            // console.log(numConvertido);
+            
+            // conserves the left zeros after the coma
+            var concatenado = numeroOriginal.substring(0, tamanhoDecimal - numConvertido.toString().length);
+
+
+
+            result += concatenado +""+ numConvertido;
+            // console.log(concatenado);
         }
     }
+// console.log(result);
 
     return result;
 }
@@ -123,11 +147,6 @@ function toVigesimalHelper(decimal) // 'aa' = 210
     return result;
 }
 
-function toVigesimalORIG(decimal)
-{
-    return decimal.toString(20).toString(10);
-}
-
 function getKeyByValue(object, value)
 {
     return Object.keys(object).find(
@@ -135,9 +154,9 @@ function getKeyByValue(object, value)
     );
 }
 
-function corrigeSimbolo(decimal_expression)
+function corrigeSimbolo(expression)
 {
-    var newString = decimal_expression.replace(/÷/g, '/'); // corrects division symbol
+    var newString = expression.replace(/÷/g, '/'); // corrects division symbol
     newString     = newString.replace(/×/g, '*'); // corrects multiplication symbol
     return newString;
 }
@@ -154,4 +173,32 @@ function getLastTerm(valor) {
     var lastOperatorValue = ultimoOperador(valor);
     var ultimoValorVigesimal = valor.substring(lastOperatorValue+1, valor.length);
     return ultimoValorVigesimal;
+}
+
+/**
+ * Return position of the last operator
+ * @param string
+ * @returns int
+ */
+function ultimoOperador( str )
+{
+    if ( typeof str != undefined) {
+        var v_indexes = [];
+        if ( str.lastIndexOf("×") > 0 )
+            v_indexes.push( str.lastIndexOf("×") );
+
+        if ( str.lastIndexOf("÷") > 0 )
+            v_indexes.push( str.lastIndexOf("÷") );
+
+        if ( str.lastIndexOf("+") > 0 )
+            v_indexes.push( str.lastIndexOf("+") );
+
+        if ( str.lastIndexOf("-") > 0 )
+            v_indexes.push( str.lastIndexOf("-") );
+
+        var biggestNumber = Math.max.apply(Math, v_indexes);
+        return biggestNumber;
+    }
+
+    return false;
 }
